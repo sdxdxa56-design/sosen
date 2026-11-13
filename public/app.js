@@ -1,3 +1,4 @@
+// language: JavaScript, file: public/app.js
 const startButton = document.querySelector("#start");
 const captureButton = document.querySelector("#capture");
 const video = document.querySelector("#preview");
